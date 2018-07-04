@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+>
+<head>
+    <style>
+        #myInput {
+            background-position: 10px 12px;
+            background-repeat: no-repeat;
+            width: 100%;
+            font-size: 16px;
+            padding: 12px 20px 12px 40px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+        }
+
+        #myTable {
+            border-collapse: collapse;
+            width: 100%;
+            border: 1px solid #ddd;
+            font-size: 18px;
+        }
+
+        #myTable th, #myTable td {
+            text-align: left;
+            padding: 12px;
+        }
+
+        #myTable tr {
+            border-bottom: 1px solid #ddd;
+        }
+
+        #myTable tr.header, #myTable tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+    <meta charset="utf-8" />
+    <title>Search Person</title>
+</head>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    function filterFunc() {
+        var input, filter, table, tr, td, i;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("myTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+axios.get('/allPersons')
+    .then(function (response) {
+        var tr, td;
+        tbody = document.getElementById("myTable");
+        for (var i = 0; i < response.data.length; i++) {
+            tr = tbody.insertRow(tbody.rows.length);
+            td = tr.insertCell(tr.cells.length);
+            td.setAttribute("align", "center");
+            td.innerHTML = response.data[i].id;
+            td = tr.insertCell(tr.cells.length);
+            td.innerHTML = response.data[i].name;
+        }
+        console.log(response);
+    })
+    .catch(function (error) {
+        console.log(error);
+})
+
+</script>
+<body>
+<h1>Person Table</h1>
+
+<input type="text" id="myInput" onkeyup="filterFunc()" placeholder="Search for names..">
+<<table id="myTable">
+    <tr class="header">
+        <th style="width:60%;">Id</th>
+        <th style="width:40%;">Name</th>
+    </tr>
+</table>
+<a href="/submit">Submit another person</a>
+</body>
+</html>
